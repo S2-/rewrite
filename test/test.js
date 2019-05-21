@@ -1,13 +1,13 @@
-const Tom = require('test-runner').Tom
+const TestRunner = require('test-runner')
 const Rewrite = require('../')
 const Static = require('lws-static')
 const Lws = require('lws')
-const fetch = require('node-fetch')
+const request = require('req-then')
 const a = require('assert')
 
-const tom = module.exports = new Tom('rewrite')
+const runner = new TestRunner()
 
-tom.test('simple', async function () {
+runner.test('simple', async function () {
   const port = 8000 + this.index
   const lws = new Lws()
   const server = lws.listen({
@@ -16,8 +16,7 @@ tom.test('simple', async function () {
     directory: 'test/fixture',
     rewrite: { from: '/two.html', to: '/one.html' }
   })
-  const response = await fetch(`http://localhost:${port}/two.html`)
-  const body = await response.text()
-  a.strictEqual(body, 'one\n')
+  const response = await request(`http://localhost:${port}/two.html`)
+  a.strictEqual(response.data.toString(), 'one\n')
   server.close()
 })
